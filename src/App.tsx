@@ -1,25 +1,40 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 function App() {
+  type Issue = {
+    number: number;
+    title: string;
+    state: string;
+  };
+
+  const [issues, setIssues] = useState<Issue[]>([]);
+
+  useEffect(() => {
+    axios
+      .get("https://api.github.com/repos/ContentPI/ContentPI/issues")
+      .then((res) => {
+        setIssues(res.data);
+      });
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
+    <>
+      <h1>ContentPI Issues</h1>
+      {issues.map((issue: Issue) => (
+        <p key={issue.title}>
+          <strong>#{issue.number}</strong>{" "}
+          <a
+            href={`https://github.com/ContentPI/ContentPI/issues/${issue.number}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {issue.title}
+          </a>{" "}
+          {issue.state}
         </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+      ))}
+    </>
   );
 }
 
